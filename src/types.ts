@@ -1,13 +1,18 @@
-export interface Item{
-    id:string;
+export interface ExpenseForm{
     title:string;
-    completed:boolean;
-}
-export interface FormState{
-    title:String;
-    editId:String|null;
-}
-export interface AppState{
-    items:Item[];
-    form:FormState;
+    // editId:string|null;
+    category:string;
+    currency:string;
+    amount:number;
+    date:string;
+    time:string;
+    payments:string;
+    transactionID:string;
+    vendorName:string;
+    location:string;
+    tags:string;
+    notes:string;
+    receipt:boolean;
+    saveRecurring:boolean;
+    saveExpense:boolean;
 }

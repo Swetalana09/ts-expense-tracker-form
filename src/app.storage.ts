@@ -1,13 +1,14 @@
-import { state } from "./app.state";
-export function saveToStorage():void{
-    localStorage.setItem('appState',JSON.stringify(state));
-}
+import {state} from "./app.state";
 
-export function loadFromStorage():void{
-        const saved=localStorage.getItem('appState');
-        if(saved){
-            const parsed=JSON.parse(saved);
-            state.items=parsed.items ?? [];
-            state.form=parsed.form ?? {title:'',amount:0,category:'',editId:null}
-        }
-    }
+const storage={
+saveState(){
+    localStorage.setItem('expense-data',JSON.stringify(state.records));
+},
+
+    loadState(){
+    const data=localStorage.getItem('expense-data');
+    return data?JSON.parse(data):[];
+}
+} 
+export default storage;
+

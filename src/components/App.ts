@@ -1,4 +1,5 @@
 import {Form} from './Form.js';
+import { Table } from './Table.js';
 export function renderApp():void{
     const root=document.getElementById('app');
 
@@ -11,5 +12,6 @@ export function renderApp():void{
     layout.className='app';
 
     layout.appendChild(Form());
+    layout.appendChild(Table());
     root.appendChild(layout);
 }
