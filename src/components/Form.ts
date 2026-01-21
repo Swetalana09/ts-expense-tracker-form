@@ -2,7 +2,7 @@ import { element } from "../utils/dom";
 import { renderApp } from "./App";
 // import validation from "./Validation";
 import { state } from "../app.state";
-// import storage from "../app.storage";
+import storage from "../app.storage";
 import type { ExpenseForm } from "../types";
 import { addRecord, updateRecord } from "../app.logic";
 
@@ -131,6 +131,7 @@ const label=element('label');
 label.textContent=p.label;
 paymentSection.appendChild(radio);
 paymentSection.appendChild(label);
+paymentSection.appendChild(document.createElement('br'));
 });
 form.appendChild(paymentSection);
 
@@ -235,6 +236,7 @@ receipt.name='receipt';
     saveExpenseLabel.textContent='Save this expense';
     formRowPrefs.appendChild(saveExpense);
     formRowPrefs.appendChild(saveExpenseLabel);
+    paymentSection.appendChild(document.createElement('br'));
     form.appendChild(formRowPrefs);
 
     const formRowSubmit=element('div');
@@ -271,6 +273,7 @@ receipt.name='receipt';
             updateRecord(data);
         }
         alert("Form submitted successfully!")
+        storage.saveState();
         renderApp();
     });
     return form;

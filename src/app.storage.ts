@@ -7,7 +7,12 @@ saveState(){
 
     loadState(){
     const data=localStorage.getItem('expense-data');
-    return data?JSON.parse(data):[];
+    if(data){
+        const parsed=JSON.parse(data);
+        if(Array.isArray(parsed)){
+            state.records=parsed;
+        }
+    }
 }
 } 
 export default storage;
