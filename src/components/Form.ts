@@ -1,38 +1,38 @@
 import { element } from "../utils/dom";
 import { renderApp } from "./App";
-// import validation from "./Validation";
+import {validateTitle, validateAmount,validateRequired,validateSelect,validateRadioGroup,validateCheckbox,validateDate,removeAllErrors,removeError,removeGroupError} from './Validation';
 import { state } from "../app.state";
 import storage from "../app.storage";
 import type { ExpenseForm } from "../types";
 import { addRecord, updateRecord } from "../app.logic";
-
 export function Form(): HTMLFormElement{
+
+
 const form=element('form') as HTMLFormElement;
+form.className='form';
 
 const formRow1=element('div');
 formRow1.className='form-row';
 const titleGroup=element('div');
 titleGroup.className='input-group flex-2';
 const titleLabel=element('label');
-titleLabel.textContent='Expense Title';
+titleLabel.innerHTML='Expense Title <span class="asterisk">*</span>';
 const title=element('input') as HTMLInputElement;
 title.type='text';
 title.name='exptitle';
 title.id='exptitle';
 title.placeholder='Expense name';
-title.required=true;
 titleGroup.appendChild(titleLabel);
 titleGroup.appendChild(title);
 
 const categoryGroup=element('div');
 categoryGroup.className='input-group flex-1';
 const categoryLabel=element('label')
-categoryLabel.textContent='Category';
+categoryLabel.innerHTML='Category <span class="asterisk">*</span';
 const category=element('select') as HTMLSelectElement;
 category.name='category';
 category.id='category';
-category.required=true;
-['Select Category','Housing','Food','Transportation','Health','Shopping','Entertainment','Technology','Miscellaneous expenses'].forEach(c=>{
+['---select---','Housing','Food','Transportation','Health','Shopping','Entertainment','Technology','Miscellaneous expenses'].forEach(c=>{
 const option=element('option') as HTMLOptionElement;
 option.value=c;
 option.textContent=c;
@@ -49,30 +49,28 @@ formRow2.className='form-row';
 const currencyGroup=element('div');
 currencyGroup.className='input-group flex1';
 const currencyLabel=element('label');
-currencyLabel.textContent='Currency';
+currencyLabel.innerHTML='Currency <span class="asterisk">*</span';
 const currency=element('select') as HTMLSelectElement;
 currency.name='currency';
 currency.id='currency';
-currency.required=true;
-['Select Currency','USD','INR','EUR'].forEach(c=>{
-        const option=element('option') as HTMLOptionElement;
-        option.value=c;
-        option.textContent=c;
-        currency.appendChild(option);
-    });
+['---select---','USD','INR','EUR'].forEach(c=>{
+const option=element('option') as HTMLOptionElement;
+option.value=c;
+option.textContent=c;
+currency.appendChild(option);
+});
 currencyGroup.appendChild(currencyLabel);
 currencyGroup.appendChild(currency);
 
 const amountGroup=element('div');
 amountGroup.className='input-group flex-1';
 const amountLabel=element('label');
-amountLabel.textContent='Amount';
+amountLabel.innerHTML='Amount <span class="asterisk">*</span';
 const amount=element('input') as HTMLInputElement;
 amount.type='number';
 amount.name='amount';
 amount.id='amount';
 amount.placeholder='Enter Amount';
-amount.required=true;
 amountGroup.appendChild(amountLabel);
 amountGroup.appendChild(amount);
 
@@ -85,12 +83,12 @@ formRow3.className='form-row';
 const dateGroup=element('div');
 dateGroup.className='input-group';
 const dateLabel=element('label');
-dateLabel.textContent='Date';
+dateLabel.innerHTML='Date <span class="asterisk">*</span';
 const date=element('input') as HTMLInputElement;
 date.type='date';
 date.name='dt';
 date.id='dt';
-date.required=true;
+date.max=new Date().toISOString().split('T')[0];;
 dateGroup.appendChild(dateLabel);
 dateGroup.appendChild(date);
 
@@ -111,7 +109,7 @@ form.appendChild(formRow3);
 
 const paymentSection=element('fieldset');
 const paymentLegend=element('legend');
-paymentLegend.textContent='Payment Method';
+paymentLegend.innerHTML='Payment Method <span class="asterisk">*</span';
 paymentSection.appendChild(paymentLegend);
 const payments=[{id:'payment_card', label:'Cash', value:'Cash'},
 {id:'payment_card',label:'Credit/Debit Card',value:'Credit/Debit Card'},
@@ -125,7 +123,6 @@ radio.type='radio';
 radio.name='payment';
 radio.id=p.id;
 radio.value=p.value;
-radio.required=true;
 paymentRadios.push(radio);
 const label=element('label');
 label.textContent=p.label;
@@ -202,54 +199,118 @@ notes.name='note';
 notes.placeholder='Your message...';
 formRowNotes.appendChild(notes);
 form.appendChild(formRowNotes);
+
 const formRowPrefs=element('fieldset');
 const prefsLegend=element('legend');
 prefsLegend.textContent='Expense Preferences';
 formRowPrefs.appendChild(prefsLegend);
 const receipt=element('input') as HTMLInputElement;
 receipt.name='receipt';
-    receipt.value='Available';
-    receipt.type='checkbox';
-    receipt.value='Yes';
-    const receiptLabel=element('label');
-    receiptLabel.textContent='Receipt Available';
-    formRowPrefs.appendChild(receipt);
-    formRowPrefs.appendChild(receiptLabel);
+receipt.value='Available';
+receipt.type='checkbox';
+receipt.value='Yes';
+const receiptLabel=element('label');
+receiptLabel.textContent='Receipt Available';
+formRowPrefs.appendChild(receipt);
+formRowPrefs.appendChild(receiptLabel);
+formRowPrefs.appendChild(document.createElement('br'));
 
-    const saveRecurring=element('input') as HTMLInputElement;
-    saveRecurring.id='save_recurring';
-    saveRecurring.name='save_recurring';
-    saveRecurring.value='Yes';
-    saveRecurring.type='checkbox';
-    const saveRecurringLabel=element('label');
-    saveRecurringLabel.textContent='Save this recurring expense';
-    formRowPrefs.appendChild(saveRecurring);
-    formRowPrefs.appendChild(saveRecurringLabel);
+const saveRecurring=element('input') as HTMLInputElement;
+saveRecurring.id='save_recurring';
+saveRecurring.name='save_recurring';
+saveRecurring.value='Yes';
+saveRecurring.type='checkbox';
+const saveRecurringLabel=element('label');
+saveRecurringLabel.textContent='Save this recurring expense';
+formRowPrefs.appendChild(saveRecurring);
+formRowPrefs.appendChild(saveRecurringLabel);
+formRowPrefs.appendChild(document.createElement('br'));
 
-    const saveExpense=element('input') as HTMLInputElement;
-    saveExpense.id='save_expense';
-    saveExpense.name='save_expense';
-    saveExpense.value='Yes';
-    saveExpense.type='checkbox';
-    saveExpense.required=true;
-    const saveExpenseLabel=element('label');
-    saveExpenseLabel.textContent='Save this expense';
-    formRowPrefs.appendChild(saveExpense);
-    formRowPrefs.appendChild(saveExpenseLabel);
-    paymentSection.appendChild(document.createElement('br'));
-    form.appendChild(formRowPrefs);
+const saveExpense=element('input') as HTMLInputElement;
+saveExpense.id='save_expense';
+saveExpense.name='save_expense';
+saveExpense.value='Yes';
+saveExpense.type='checkbox';
+const saveExpenseLabel=element('label');
+saveExpenseLabel.textContent='Save this expense';
+formRowPrefs.appendChild(saveExpense);
+formRowPrefs.appendChild(saveExpenseLabel);
+formRowPrefs.appendChild(document.createElement('br'));
 
-    const formRowSubmit=element('div');
-    formRowSubmit.className='submit';
-    const submitButton=element('button') as HTMLButtonElement;
-    submitButton.type='submit';
-    submitButton.textContent='SUBMIT';
-    formRowSubmit.appendChild(submitButton);
-    form.appendChild(formRowSubmit);
+form.appendChild(formRowPrefs);
 
+const formRowSubmit=element('div');
+formRowSubmit.className='submit';
+const submitButton=element('button') as HTMLButtonElement;
+submitButton.type='submit';
+submitButton.textContent=state.editIndex!==null?'UPDATE':'SUBMIT';
+formRowSubmit.appendChild(submitButton);
+form.appendChild(formRowSubmit);
+
+    title.addEventListener('input',()=>validateTitle(title,false));
+    title.addEventListener('blur',()=>validateTitle(title,true));
+    amount.addEventListener('input',()=>validateAmount(amount,false));
+    amount.addEventListener('blur',()=>validateAmount(amount,true));
+    saveExpense.addEventListener('change',()=>{removeGroupError(saveExpense);});
+
+    const allInputs=[title,category,currency,amount,date,time,transactionID,vendorName,location,tags];
+    allInputs.forEach((field)=>{
+        field.addEventListener('input',()=>{
+            removeError(field);
+        });
+    });
+    paymentRadios.forEach((radio)=>{
+        radio.addEventListener('change',()=>{
+            const parent=radio.parentElement;
+            if(parent){
+                const err=parent.querySelector('.error');
+                if(err) err.remove();
+            }
+        });
+    });
+    if(state.editIndex!==null){
+        const record=state.records[state.editIndex];
+        title.value=record.title;
+        category.value=record.category;
+        currency.value=record.currency;
+        amount.value=record.amount.toString();
+        date.value=record.date;
+        time.value=record.time||'';
+        transactionID.value=record.transactionID||'';
+        vendorName.value=record.vendorName||'';
+        location.value=record.location||'';
+        tags.value=record.tags||'';
+        notes.value=record.notes||'';
+        saveRecurring.checked=record.saveRecurring;
+        saveExpense.checked=record.saveExpense;
+        paymentRadios.forEach((r)=>{
+            if(r.value===record.payments){
+                r.checked=true;
+            }
+        });
+        receipt.checked=record.receipt;
+    }
     form.addEventListener('submit',(e:SubmitEvent):void=>{
         e.preventDefault();
-        const selectedpayments=paymentRadios.find(r=>r.checked)?.value||'';
+        let valid=true;
+        removeAllErrors();
+        if(!validateTitle(title,true)) valid=false;
+        if(!validateAmount(amount,true)) valid=false;
+        if(!validateSelect(category)) valid=false;
+        if(!validateSelect(currency)) valid=false;
+        if(!validateRequired(date)) valid=false;
+        if(date.value && !validateDate(date)) valid=false;
+        if(!validateRadioGroup(paymentRadios)) valid=false;
+        if(!validateCheckbox(saveExpense)) valid=false;
+        if(!valid){
+            const firstError=document.querySelector('.error');
+            if(firstError){
+                firstError.scrollIntoView({behavior:'smooth'});
+            }
+            return;
+        }
+        const selectedpayments=paymentRadios.find((r)=>r.checked)?.value||'';
+
         const data:ExpenseForm={
             title:title.value.trim(),
             category:category.value,
@@ -266,14 +327,15 @@ receipt.name='receipt';
             receipt:receipt.checked,
             saveRecurring:saveRecurring.checked,
             saveExpense:saveExpense.checked
-        }
+        };
         if(state.editIndex===null){
             addRecord(data)
+            alert('Form submitted successfully!')
         }else{
             updateRecord(data);
+            alert('Form updated successfully!');
         }
-        alert("Form submitted successfully!")
-        storage.saveState();
+        storage.setState();
         renderApp();
     });
     return form;

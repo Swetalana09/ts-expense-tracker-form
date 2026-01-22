@@ -1,6 +1,5 @@
 export interface ExpenseForm{
     title:string;
-    // editId:string|null;
     category:string;
     currency:string;
     amount:number;

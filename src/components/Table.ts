@@ -5,11 +5,12 @@ import { element } from "../utils/dom";
 
 export function Table():HTMLTableElement{
     const table=element('table') as HTMLTableElement;
-    table.className='expense-table';
-
+    table.className='table-main';
+    table.id='expenseTable';
+    
     const thead=element('thead');
     const headerRow=element('tr');
-    const headers=['Title','Category','Amount','Currency','Date','Time','Payment','TransactionID','Vendor','Location','Tags','Notes','Receipt','Recurring','Save Expense','Actions'];
+    const headers=['Title','Category','Amount','Currency','Date','Time','Payment Method','TransactionID','Vendor','Location','Tags','Notes/Description','Receipt','Recurring','Save Expense','Actions'];
     headers.forEach(h=>{
         const th=element('th');
         th.textContent=h;
@@ -19,6 +20,19 @@ export function Table():HTMLTableElement{
     table.appendChild(thead);
 
     const tbody=element('tbody');
+
+    if(state.records.length===0){
+        const noDataRow=element('tr');
+        noDataRow.id='noData';
+        const noDataCell=element('td') as HTMLTableCellElement;
+        noDataCell.colSpan=15;
+        noDataCell.style.textAlign='center';
+        noDataCell.style.color='black';
+        noDataCell.style.fontWeight='bold';
+        noDataCell.textContent='No data found';
+        noDataRow.appendChild(noDataCell);
+        tbody.appendChild(noDataRow);
+    }else{
     state.records.forEach((rec,i)=>{
         const trow=element('tr');
 
@@ -35,7 +49,7 @@ export function Table():HTMLTableElement{
             rec.location||'',
             rec.tags||'',
             rec.notes||'',
-            rec.receipt?'Yes':'No',
+            rec.receipt||'No',
             rec.saveRecurring?'Yes':'No',
             rec.saveExpense?'Yes':'No'
         ];
@@ -47,26 +61,39 @@ export function Table():HTMLTableElement{
         });
 
         const actionTd=element('td');
-        const editBtn=element("button");
+        const editBtn=element("button") as HTMLButtonElement;
+        editBtn.className='edit-btn';
         editBtn.textContent='EDIT';
-        editBtn.onclick=()=>{
+        editBtn.onclick=():void=>{
             editRecord(i);
             renderApp();
+
+            setTimeout(()=>{
+                const form=document.querySelector('form');
+                if(form){
+                    form.scrollIntoView({behavior:'smooth',block:'start'});
+                }
+            },100);
         };
 
-        const delBtn=element('button');
+        const delBtn=element('button') as HTMLButtonElement;
+        delBtn.className='del-btn';
         delBtn.textContent='DELETE';
-        delBtn.onclick=()=>{
+        delBtn.onclick=():void=>{
+            if(confirm('Are you sure you want to delete this expense?')){
             deleteRecord(i);
             renderApp();
+            }
         };
 
         actionTd.appendChild(editBtn);
+        actionTd.appendChild(document.createElement('br'));
         actionTd.appendChild(delBtn);
-        trow.appendChild(actionTd);
 
+        trow.appendChild(actionTd);
         tbody.appendChild(trow);
     });
+}
     table.appendChild(tbody);
     return table;
 }
