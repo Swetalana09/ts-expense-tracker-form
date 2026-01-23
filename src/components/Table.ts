@@ -1,11 +1,10 @@
-import { editRecord, deleteRecord } from "../app.logic";
+import logic from "../app.logic";
 import { state } from "../app.state";
 import { renderApp } from "./App";
 import { element } from "../utils/dom";
 
 export function Table():HTMLTableElement{
     const table=element('table') as HTMLTableElement;
-    table.className='table-main';
     table.id='expenseTable';
     
     const thead=element('thead');
@@ -17,7 +16,7 @@ export function Table():HTMLTableElement{
         headerRow.appendChild(th);
     });
     thead.appendChild(headerRow);
-    table.appendChild(thead);
+    table.appendChild(thead); 
 
     const tbody=element('tbody');
 
@@ -25,16 +24,17 @@ export function Table():HTMLTableElement{
         const noDataRow=element('tr');
         noDataRow.id='noData';
         const noDataCell=element('td') as HTMLTableCellElement;
-        noDataCell.colSpan=15;
-        noDataCell.style.textAlign='center';
-        noDataCell.style.color='black';
-        noDataCell.style.fontWeight='bold';
+        noDataCell.colSpan=headers.length;
         noDataCell.textContent='No data found';
         noDataRow.appendChild(noDataCell);
         tbody.appendChild(noDataRow);
     }else{
     state.records.forEach((rec,i)=>{
         const trow=element('tr');
+
+        if(state.editIndex===i){
+            trow.className='editing';
+        }
 
         const cells=[
             rec.title,
@@ -49,7 +49,7 @@ export function Table():HTMLTableElement{
             rec.location||'',
             rec.tags||'',
             rec.notes||'',
-            rec.receipt||'No',
+            rec.receipt?'Yes':'No',
             rec.saveRecurring?'Yes':'No',
             rec.saveExpense?'Yes':'No'
         ];
@@ -65,7 +65,7 @@ export function Table():HTMLTableElement{
         editBtn.className='edit-btn';
         editBtn.textContent='EDIT';
         editBtn.onclick=():void=>{
-            editRecord(i);
+            logic.editRecord(i);
             renderApp();
 
             setTimeout(()=>{
@@ -81,7 +81,7 @@ export function Table():HTMLTableElement{
         delBtn.textContent='DELETE';
         delBtn.onclick=():void=>{
             if(confirm('Are you sure you want to delete this expense?')){
-            deleteRecord(i);
+            logic.deleteRecord(i);
             renderApp();
             }
         };

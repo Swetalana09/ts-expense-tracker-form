@@ -2,26 +2,37 @@ import storage from "./app.storage";
 import type { ExpenseForm } from "./types";
 import { state } from "./app.state";
 
-export function addRecord(data:ExpenseForm):void{
+function addRecord(data:ExpenseForm):void{
     state.records.push(data);
-    storage.setState();
+    storage.saveState();
+    console.log('Record added,state saved');
 }
-export function updateRecord(data:ExpenseForm):void{
+function updateRecord(data:ExpenseForm):void{
     if(state.editIndex!=null){
         state.records[state.editIndex]=data;
         state.editIndex=null;
-        storage.setState();
+        storage.saveState();
+        console.log('Record updated,state saved');
     }
 }
-export function deleteRecord(index:number){
+function deleteRecord(index:number){
     state.records.splice(index,1);
     if(state.editIndex===index){
         state.editIndex=null;
     }else if(state.editIndex!==null && state.editIndex>index){
         state.editIndex--;
     }
-    storage.setState();
+    storage.saveState();
+    console.log('Record deleted')
 }
-export function editRecord(index:number):void{
+function editRecord(index:number):void{
     state.editIndex=index;
+    console.log('edit mode:index',index);
 }
+const logic={
+    addRecord,
+    updateRecord,
+    deleteRecord,
+    editRecord,
+};
+export default logic;

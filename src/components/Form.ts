@@ -1,13 +1,12 @@
 import { element } from "../utils/dom";
 import { renderApp } from "./App";
-import {validateTitle, validateAmount,validateRequired,validateSelect,validateRadioGroup,validateCheckbox,validateDate,removeAllErrors,removeError,removeGroupError} from './Validation';
+import validation from "./Validation";
 import { state } from "../app.state";
 import storage from "../app.storage";
 import type { ExpenseForm } from "../types";
-import { addRecord, updateRecord } from "../app.logic";
+import logic from "../app.logic";
+
 export function Form(): HTMLFormElement{
-
-
 const form=element('form') as HTMLFormElement;
 form.className='form';
 
@@ -21,7 +20,7 @@ const title=element('input') as HTMLInputElement;
 title.type='text';
 title.name='exptitle';
 title.id='exptitle';
-title.placeholder='Expense name';
+title.placeholder='e.g., Lunch at restaurant';
 titleGroup.appendChild(titleLabel);
 titleGroup.appendChild(title);
 
@@ -34,7 +33,6 @@ category.name='category';
 category.id='category';
 ['---select---','Housing','Food','Transportation','Health','Shopping','Entertainment','Technology','Miscellaneous expenses'].forEach(c=>{
 const option=element('option') as HTMLOptionElement;
-option.value=c;
 option.textContent=c;
 category.appendChild(option);
 });
@@ -55,7 +53,6 @@ currency.name='currency';
 currency.id='currency';
 ['---select---','USD','INR','EUR'].forEach(c=>{
 const option=element('option') as HTMLOptionElement;
-option.value=c;
 option.textContent=c;
 currency.appendChild(option);
 });
@@ -126,6 +123,7 @@ radio.value=p.value;
 paymentRadios.push(radio);
 const label=element('label');
 label.textContent=p.label;
+label.setAttribute('for',p.id);
 paymentSection.appendChild(radio);
 paymentSection.appendChild(label);
 paymentSection.appendChild(document.createElement('br'));
@@ -142,7 +140,7 @@ transactionLabel.textContent='Transaction ID (optional)';
 const transactionID=element('input') as HTMLInputElement;
 transactionID.name='transaction';
 transactionID.id='transaction';
-transactionID.placeholder='Enter Transaction ID';
+transactionID.placeholder='e.g.,TXN123456';
 transactionID.type='text';
 transactionGroup.appendChild(transactionLabel);
 transactionGroup.appendChild(transactionID);
@@ -153,7 +151,7 @@ vendorLabel.textContent='Vendor/Store Name (optional)';
 const vendorName=element('input') as HTMLInputElement;
 vendorName.name='name';
 vendorName.id='name';
-vendorName.placeholder='Enter Vendor/Store Name';
+vendorName.placeholder='e.g.,Amazon';
 vendorName.type="text";
 vendorGroup.appendChild(vendorLabel);
 vendorGroup.appendChild(vendorName);
@@ -170,7 +168,7 @@ locationLabel.textContent='Location';
 const location=element('input') as HTMLInputElement;
 location.name='loc';
 location.id='loc';
-location.placeholder='Enter Location';
+location.placeholder='Start typing a location...';
 location.type='text';
 locationGroup.appendChild(locationLabel);
 locationGroup.appendChild(location);
@@ -181,7 +179,7 @@ tagsLabel.textContent='Tags';
 const tags=element('input') as HTMLInputElement;
 tags.name='tags';
 tags.id='tags';
-tags.placeholder='eg.Food,Travel';
+tags.placeholder='e.g.,work, personal, urgent (comma-separated)';
 tags.type='text';
 tagsGroup.appendChild(tagsLabel);
 tagsGroup.appendChild(tags);
@@ -196,7 +194,8 @@ notesLabel.textContent='Notes/Description';
 formRowNotes.appendChild(notesLabel);
 const notes=element('textarea') as HTMLTextAreaElement;
 notes.name='note';
-notes.placeholder='Your message...';
+notes.id='note';
+notes.placeholder='Add any additional notes...';
 formRowNotes.appendChild(notes);
 form.appendChild(formRowNotes);
 
@@ -204,7 +203,9 @@ const formRowPrefs=element('fieldset');
 const prefsLegend=element('legend');
 prefsLegend.textContent='Expense Preferences';
 formRowPrefs.appendChild(prefsLegend);
+
 const receipt=element('input') as HTMLInputElement;
+receipt.id='receipt_available';
 receipt.name='receipt';
 receipt.value='Available';
 receipt.type='checkbox';
@@ -222,6 +223,7 @@ saveRecurring.value='Yes';
 saveRecurring.type='checkbox';
 const saveRecurringLabel=element('label');
 saveRecurringLabel.textContent='Save this recurring expense';
+saveRecurringLabel.setAttribute('for','save_recurring');
 formRowPrefs.appendChild(saveRecurring);
 formRowPrefs.appendChild(saveRecurringLabel);
 formRowPrefs.appendChild(document.createElement('br'));
@@ -232,11 +234,11 @@ saveExpense.name='save_expense';
 saveExpense.value='Yes';
 saveExpense.type='checkbox';
 const saveExpenseLabel=element('label');
-saveExpenseLabel.textContent='Save this expense';
+saveExpenseLabel.innerHTML='Save this expense <span class="asterisk">*</span';
+saveExpenseLabel.setAttribute('for','save_recurring');
 formRowPrefs.appendChild(saveExpense);
 formRowPrefs.appendChild(saveExpenseLabel);
 formRowPrefs.appendChild(document.createElement('br'));
-
 form.appendChild(formRowPrefs);
 
 const formRowSubmit=element('div');
@@ -247,16 +249,16 @@ submitButton.textContent=state.editIndex!==null?'UPDATE':'SUBMIT';
 formRowSubmit.appendChild(submitButton);
 form.appendChild(formRowSubmit);
 
-    title.addEventListener('input',()=>validateTitle(title,false));
-    title.addEventListener('blur',()=>validateTitle(title,true));
-    amount.addEventListener('input',()=>validateAmount(amount,false));
-    amount.addEventListener('blur',()=>validateAmount(amount,true));
-    saveExpense.addEventListener('change',()=>{removeGroupError(saveExpense);});
+    title.addEventListener('input',()=>validation.validateTitle(title,false));
+    title.addEventListener('blur',()=>validation.validateTitle(title,true));
+    amount.addEventListener('input',()=>validation.validateAmount(amount,false));
+    amount.addEventListener('blur',()=>validation.validateAmount(amount,true));
+    saveExpense.addEventListener('change',()=>{validation.removeGroupError(saveExpense);});
 
     const allInputs=[title,category,currency,amount,date,time,transactionID,vendorName,location,tags];
     allInputs.forEach((field)=>{
         field.addEventListener('input',()=>{
-            removeError(field);
+            validation.removeError(field);
         });
     });
     paymentRadios.forEach((radio)=>{
@@ -285,23 +287,22 @@ form.appendChild(formRowSubmit);
         saveExpense.checked=record.saveExpense;
         paymentRadios.forEach((r)=>{
             if(r.value===record.payments){
-                r.checked=true;
-            }
+                r.checked=true;}
         });
         receipt.checked=record.receipt;
     }
     form.addEventListener('submit',(e:SubmitEvent):void=>{
         e.preventDefault();
         let valid=true;
-        removeAllErrors();
-        if(!validateTitle(title,true)) valid=false;
-        if(!validateAmount(amount,true)) valid=false;
-        if(!validateSelect(category)) valid=false;
-        if(!validateSelect(currency)) valid=false;
-        if(!validateRequired(date)) valid=false;
-        if(date.value && !validateDate(date)) valid=false;
-        if(!validateRadioGroup(paymentRadios)) valid=false;
-        if(!validateCheckbox(saveExpense)) valid=false;
+        validation.removeAllErrors();
+        if(!validation.validateTitle(title,true)) valid=false;
+        if(!validation.validateAmount(amount,true)) valid=false;
+        if(!validation.validateSelect(category)) valid=false;
+        if(!validation.validateSelect(currency)) valid=false;
+        if(!validation.validateRequired(date)) valid=false;
+        if(date.value && !validation.validateDate(date)) valid=false;
+        if(!validation.validateRadioGroup(paymentRadios)) valid=false;
+        if(!validation.validateCheckbox(saveExpense)) valid=false;
         if(!valid){
             const firstError=document.querySelector('.error');
             if(firstError){
@@ -310,7 +311,7 @@ form.appendChild(formRowSubmit);
             return;
         }
         const selectedpayments=paymentRadios.find((r)=>r.checked)?.value||'';
-
+        
         const data:ExpenseForm={
             title:title.value.trim(),
             category:category.value,
@@ -329,15 +330,14 @@ form.appendChild(formRowSubmit);
             saveExpense:saveExpense.checked
         };
         if(state.editIndex===null){
-            addRecord(data)
+            logic.addRecord(data)
             alert('Form submitted successfully!')
         }else{
-            updateRecord(data);
+            logic.updateRecord(data);
             alert('Form updated successfully!');
         }
-        storage.setState();
+        storage.saveState();
         renderApp();
     });
     return form;
 }
-

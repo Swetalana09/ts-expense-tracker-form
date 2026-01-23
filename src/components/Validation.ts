@@ -4,8 +4,6 @@ function showError(el:HTMLElement,msg:string):void{
     removeError(el);
     const e=element('div');
     e.className='error';
-    e.style.color='red';
-    e.style.fontSize='12px';
     e.textContent=msg;
     if(el.nextSibling){
         el.parentElement?.insertBefore(e,el.nextSibling);
@@ -13,7 +11,6 @@ function showError(el:HTMLElement,msg:string):void{
         el.parentElement?.appendChild(e);
     }
 }
-
 function removeError(el:HTMLElement):void{
     const parent=el.parentElement;
     if(!parent) return;
@@ -30,13 +27,11 @@ function showGroupError(el:HTMLElement|null,msg:string):void{
     if(existing) existing.remove();
     const e=element('div');
     e.className='error';
-    e.style.color='red';
-    e.style.fontSize='12px';
     e.textContent=msg;
     parent.appendChild(e);
 }
 
-export function validateTitle(titleInput:HTMLInputElement,showRequired:boolean=false):boolean{
+function validateTitle(titleInput:HTMLInputElement,showRequired:boolean=false):boolean{
     const value=titleInput.value;
     removeError(titleInput);
 
@@ -61,7 +56,7 @@ export function validateTitle(titleInput:HTMLInputElement,showRequired:boolean=f
     }
     return true;
 }
-export function validateAmount(amountInput:HTMLInputElement,showRequired:boolean=false):boolean{
+function validateAmount(amountInput:HTMLInputElement,showRequired:boolean=false):boolean{
     const value=amountInput.value.trim();
     removeError(amountInput);
 
@@ -82,7 +77,7 @@ export function validateAmount(amountInput:HTMLInputElement,showRequired:boolean
     return true;
 }
 
-export function validateRequired(input:HTMLInputElement|HTMLSelectElement):boolean{
+function validateRequired(input:HTMLInputElement|HTMLSelectElement):boolean{
     removeError(input);
     if(input.value.trim()===''){
         if(input.id==='dt'){
@@ -99,7 +94,7 @@ export function validateRequired(input:HTMLInputElement|HTMLSelectElement):boole
     return true;
 }
 
-export function validateSelect(select:HTMLSelectElement):boolean{
+function validateSelect(select:HTMLSelectElement):boolean{
     removeError(select);
     if(select.value==='---select---'){
         if(select.id==='category'){
@@ -114,7 +109,7 @@ export function validateSelect(select:HTMLSelectElement):boolean{
     return true;
 }
 
-export function validateRadioGroup(radios:HTMLInputElement[]):boolean{
+function validateRadioGroup(radios:HTMLInputElement[]):boolean{
     let radioChecked=false;
     radios.forEach((radio)=>{
         if(radio.checked){
@@ -131,7 +126,7 @@ export function validateRadioGroup(radios:HTMLInputElement[]):boolean{
     return true;
 }
 
-export function validateCheckbox(checkbox:HTMLInputElement):boolean{
+function validateCheckbox(checkbox:HTMLInputElement):boolean{
     if(!checkbox.checked){
         showGroupError(checkbox,'You must save this expense.');
         return false;
@@ -139,7 +134,7 @@ export function validateCheckbox(checkbox:HTMLInputElement):boolean{
     return true;
 }
 
-export function validateDate(dateInput:HTMLInputElement):boolean{
+function validateDate(dateInput:HTMLInputElement):boolean{
     removeError(dateInput);
     const today=new Date().toISOString().slice(0,10);
 
@@ -157,7 +152,20 @@ function removeGroupError(el:HTMLElement|null):void{
     const error=parent.querySelector('.error');
     if(error) error.remove();
 }
-export function removeAllErrors():void{
+function removeAllErrors():void{
     document.querySelectorAll('.error').forEach((err)=>err.remove());
 }
-export{removeError,showError, removeGroupError};
+const validation={
+    validateTitle,
+    validateSelect,
+    validateAmount,
+    validateRequired,
+    validateRadioGroup,
+    validateCheckbox,
+    validateDate,
+    removeAllErrors,
+    removeError,
+    showError,
+    removeGroupError
+};
+export default validation;

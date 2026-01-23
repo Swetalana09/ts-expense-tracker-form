@@ -9,18 +9,24 @@ export function renderApp():void{
     }
 
     root.innerHTML='';
+    
     const layout=document.createElement('div');
-    layout.className='app';
+    layout.className='page-layout';
     const container=element('div');
+    container.className='container';
 
+    const tableBox=element('div');
+    tableBox.className='table-box';
     const tableHeading=element('div');
     tableHeading.className='table-heading';
-    const h3=element('h3');
+    const h3=element('h2');
     h3.textContent='EXPENSE RECORDS';
     tableHeading.append(h3);
-    const tableBox=element('div');
-    tableBox.className='table-main';
-    tableBox.append(tableHeading,Table());
+    tableBox.append(tableHeading);
+    const tableMain=element('div');
+    tableMain.className='table-main';
+    tableMain.append(Table());
+    tableBox.append(tableMain);
     
     const main=element('div');
     main.className='main';
