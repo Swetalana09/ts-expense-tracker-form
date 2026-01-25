@@ -1,6 +1,6 @@
-import storage from "./app.storage";
-import type { ExpenseForm } from "./types";
-import { state } from "./app.state";
+import storage from "./storage.service";
+import type { ExpenseForm } from "../types";
+import { state } from "./state.service";
 
 const logic={
     addRecord(data:ExpenseForm):void{
@@ -65,10 +65,3 @@ clearAllRecords():void{
 }
 };
 export default logic;
-// const logic={
-//     addRecord,
-//     updateRecord,
-//     deleteRecord,
-//     editRecord,
-// };
-// export default logic;

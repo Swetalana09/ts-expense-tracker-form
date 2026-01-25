@@ -1,5 +1,5 @@
-import logic from "../app.logic";
-import { state } from "../app.state";
+import logic from "../services/logic.service";
+import { state } from "../services/state.service";
 import { renderApp } from "./App";
 import { element } from "../utils/dom";
 import { showConfirmModal } from "./Modal";

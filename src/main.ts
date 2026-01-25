@@ -1,6 +1,6 @@
 import '../style.css';
 import { renderApp } from './components/App';
-import storage from './app.storage';
+import storage from './services/storage.service';
 
 document.addEventListener('DOMContentLoaded',():void=>{
     console.log('App starting...');

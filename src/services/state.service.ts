@@ -1,4 +1,4 @@
-import type { ExpenseForm } from "./types";
+import type { ExpenseForm } from "../types";
 
 const _state={
     records:[] as ExpenseForm[],

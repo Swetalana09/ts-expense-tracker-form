@@ -1,10 +1,10 @@
 import { element } from "../../utils/dom";
 import { renderApp } from "../App";
-import validation from "../Validation";
-import { state } from "../../app.state";
-import storage from "../../app.storage";
+import validation from "../../services/validation.service";
+import { state } from "../../services/state.service";
+import storage from "../../services/storage.service";
 import type { ExpenseForm } from "../../types";
-import logic from "../../app.logic";
+import logic from "../../services/logic.service";
 import { showSuccessModal } from "../Modal";
 
 import createTitleCategorySection from "./Sections/TitleCategorySection";

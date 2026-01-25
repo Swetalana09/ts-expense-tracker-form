@@ -1,4 +1,4 @@
-import {state} from "./app.state";
+import { state } from "./state.service";
 
 const STORAGE_KEY='expenseTrackerState';
 
