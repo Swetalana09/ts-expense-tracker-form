@@ -65,7 +65,7 @@ function validateAmount(amountInput:HTMLInputElement,showRequired:boolean=false)
         return false;
     }
     if(value!==''){
-        if(!/^\d{1,10}(\.\d{1,2})?$/.test(value)){
+        if(!/^\d{1,10}(\.\d{0,2})?$/.test(value)){
             showError(amountInput,'Enter a valid number (up to 10 digits and 2 decimals).');
             return false;
         }

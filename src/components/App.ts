@@ -1,6 +1,8 @@
-import {Form} from './Form.js';
+import Form from './Form/Form.js';
 import { Table } from './Table.js';
 import { element } from '../utils/dom.js';
+import ThemeToggle from './ThemeToggle.js';
+
 export function renderApp():void{
     const root=document.getElementById('app');
 
@@ -9,10 +11,14 @@ export function renderApp():void{
     }
 
     root.innerHTML='';
-    
     const layout=document.createElement('div');
     layout.className='page-layout';
+    const header=element('div') as HTMLDivElement;
+    header.className='app-header';
+    header.appendChild(ThemeToggle());
+    layout.appendChild(header);
     const container=element('div');
+
     container.className='container';
 
     const tableBox=element('div');

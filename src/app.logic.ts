@@ -2,37 +2,73 @@ import storage from "./app.storage";
 import type { ExpenseForm } from "./types";
 import { state } from "./app.state";
 
-function addRecord(data:ExpenseForm):void{
-    state.records.push(data);
+const logic={
+    addRecord(data:ExpenseForm):void{
+    state.addRecord(data);
     storage.saveState();
     console.log('Record added,state saved');
-}
-function updateRecord(data:ExpenseForm):void{
-    if(state.editIndex!=null){
-        state.records[state.editIndex]=data;
+},
+
+updateRecord(data:ExpenseForm):void{
+    const editIndex=state.editIndex;
+    if(editIndex!=null){
+        state.updateRecord(editIndex,data);
         state.editIndex=null;
         storage.saveState();
         console.log('Record updated,state saved');
     }
-}
-function deleteRecord(index:number){
-    state.records.splice(index,1);
-    if(state.editIndex===index){
+},
+
+deleteRecord(index:number):void{
+    const editIndex=state.editIndex;
+    state.deleteRecord(index);
+
+    if(editIndex===index){
         state.editIndex=null;
-    }else if(state.editIndex!==null && state.editIndex>index){
-        state.editIndex--;
+    }else if(editIndex!==null && editIndex>index){
+        state.editIndex=editIndex-1;
     }
     storage.saveState();
     console.log('Record deleted')
-}
-function editRecord(index:number):void{
+},
+
+editRecord(index:number):void{
     state.editIndex=index;
     console.log('edit mode:index',index);
+},
+
+getRecord(index:number):ExpenseForm|null{
+    return state.getRecord(index);
+},
+
+getAllRecords():ExpenseForm[]{
+    return state.records;
+},
+
+getRecordsCount():number{
+    return state.getRecordsCount();
+},
+isEditing():boolean{
+    return state.editIndex!==null;
+},
+getEditIndex():number|null{
+    return state.editIndex;
+},
+
+cancelEdit():void{
+    state.editIndex=null;
+},
+clearAllRecords():void{
+    state.clearAllRecords();
+    storage.saveState();
+    console.log('All records cleared');
 }
-const logic={
-    addRecord,
-    updateRecord,
-    deleteRecord,
-    editRecord,
 };
 export default logic;
+// const logic={
+//     addRecord,
+//     updateRecord,
+//     deleteRecord,
+//     editRecord,
+// };
+// export default logic;

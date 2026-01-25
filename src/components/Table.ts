@@ -2,6 +2,7 @@ import logic from "../app.logic";
 import { state } from "../app.state";
 import { renderApp } from "./App";
 import { element } from "../utils/dom";
+import { showConfirmModal } from "./Modal";
 
 export function Table():HTMLTableElement{
     const table=element('table') as HTMLTableElement;
@@ -80,11 +81,12 @@ export function Table():HTMLTableElement{
         delBtn.className='del-btn';
         delBtn.textContent='DELETE';
         delBtn.onclick=():void=>{
-            if(confirm('Are you sure you want to delete this expense?')){
+            showConfirmModal('Are you sure you want to delete this expense?',()=>{
             logic.deleteRecord(i);
             renderApp();
             }
-        };
+            );
+    };
 
         actionTd.appendChild(editBtn);
         actionTd.appendChild(document.createElement('br'));
