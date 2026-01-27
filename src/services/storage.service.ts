@@ -1,18 +1,28 @@
-import { state } from "./state.service";
+import StateService from "./state.service";
 
-const STORAGE_KEY='expenseTrackerState';
+class StorageService{
+    private static instance: StorageService;
+    private readonly STORAGE_KEY='expenseTrackerState';
 
-const _storage={
-    getItem(key:string):string|null {
+    private constructor(){}
+
+    public static getInstance():StorageService{
+        if(!StorageService.instance){
+            StorageService.instance=new StorageService();
+        }
+        return StorageService.instance;
+    }
+
+    private getItem(key:string):string|null{
         try{
             return localStorage.getItem(key);
         }catch(error){
             console.error('Error reading from localStorage:',error);
             return null;
         }
-    },
+    }
 
-    setItem(key:string, value:string):boolean{
+    private setItem(key:string, value:string):boolean{
         try{
             localStorage.setItem(key,value);
             return true;
@@ -20,9 +30,9 @@ const _storage={
             console.error('Error writing to localStorage:',error);
             return false;
         }
-    },
+    }
 
-    removeItem(key:string):boolean{
+    private removeItem(key:string):boolean{
         try{
             localStorage.removeItem(key);
             return true;
@@ -31,91 +41,64 @@ const _storage={
             return false;
         }
     }
-};
 
-const storage={
-    saveState():void{
+    public saveState():void{
         try{
+            const stateService=StateService.getInstance();
             const stateToSave={
-                records:state.records,
-                editIndex:state.editIndex,
+                records:stateService.records,
+                editIndex:stateService.editIndex,
             };
             const jsonString=JSON.stringify(stateToSave);
-            const success=_storage.setItem(STORAGE_KEY,jsonString);
+            const success=this.setItem(this.STORAGE_KEY,jsonString);
 
             if(success){
-                console.log("State saved to localStorage:",state.records.length,'records');
+                console.log("State saved to localStorage:",stateService.records.length,'records');
             }else{
-                console.error('Failed to save state to localStorage');
+                console.log('Failed to save state to localStorage');
             }
         }catch(error){
             console.error('Error saving to localStorage:',error);
         }
-    },
+    }
 
-    loadState():void{
+    public loadState():void{
         try{
-            const savedState=_storage.getItem(STORAGE_KEY);
-            
+            const savedState=this.getItem(this.STORAGE_KEY);
             if(savedState){
                 const parsed=JSON.parse(savedState);
-                state.records=parsed.records||[];
-                state.editIndex=parsed.editIndex||null;
-                console.log('State loaded from localStorage:',state.records.length,'records');
-        }else{
-            console.log('No saved state found');
+                const stateService=StateService.getInstance();
+                stateService.records=parsed.records||[];
+                stateService.editIndex=parsed.editIndex||null;
+                console.log('State loaded from localStorage:',stateService.records.length,'records');
+            }else{
+                console.log('No saved state found');
+            }
+        }catch(error){
+            console.error('Error loading from localStorage:',error);
         }
-    }catch(error){
-        console.log('Error loading from localStorage:',error);
     }
-},
 
-clearState():void{
-    const success=_storage.removeItem(STORAGE_KEY);
-    if(success){
-        state.clearAllRecords();
-        console.log('State cleared from localStorage');
-    }else{
-        console.log('Failed to clear state from localStorage');
-    }
-},
-
-hasState():boolean{
-    const savedState=_storage.getItem(STORAGE_KEY);
-    return savedState !== null;
-},
-
-getStorageSize():number{
-    const savedState=_storage.getItem(STORAGE_KEY);
-    return savedState ? savedState.length:0;
-},
-
-exportState():string|null{
-    try{
-        return _storage.getItem(STORAGE_KEY);
-    }catch(error){
-        console.error('Error exporting state:',error);
-        return null;
-    }
-},
-
-importState(jsonString:string):boolean{
-    try{
-        JSON.parse(jsonString);
-        const success=_storage.setItem(STORAGE_KEY,jsonString);
-
+    public clearState():void{
+        const success=this.removeItem(this.STORAGE_KEY);
         if(success){
-            this.loadState();
-            console.log('State imported successfully');
-            return true;
+            const stateService=StateService.getInstance();
+            stateService.clearAllRecords();
+            console.log('State cleared from localStorage');
+        }else{
+            console.error('Failed to clear state from localStorage');
         }
-        return false;
-    }catch(error){
-        console.error('Error importing state:',error);
-        return false;
+    }
+
+    public hasState():boolean{
+        const savedState=this.getItem(this.STORAGE_KEY);
+        return savedState!==null;
+    }
+
+    public getStorageSize():number{
+        const savedState=this.getItem(this.STORAGE_KEY);
+        return savedState?savedState.length:0;
     }
 }
-};
 
-export default storage;
-
+export default StorageService;

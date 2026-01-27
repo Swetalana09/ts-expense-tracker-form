@@ -1,54 +1,77 @@
 import type { ExpenseForm } from "../types";
+import EventBus from "./eventbus.service";
 
-const _state={
-    records:[] as ExpenseForm[],
-    editIndex:null as number|null
-};
+class StateService{
+    private static instance: StateService;
+    private _records:ExpenseForm[]=[];
+    private _editIndex:number|null=null;
+    private eventBus:EventBus;
 
-export const state={
-    get records():ExpenseForm[]{
-        return _state.records;
-    },
+    private constructor(){
+        this.eventBus=EventBus.getInstance();
+    }
 
-    set records(value:ExpenseForm[]){
-        _state.records=value;
-    },
-
-    get editIndex():number|null{
-        return _state.editIndex;
-    },
-
-    set editIndex(value:number|null){
-        _state.editIndex=value;
-    },
-
-    addRecord(record:ExpenseForm):void{
-        _state.records.push(record);
-    },
-
-    updateRecord(index:number, record:ExpenseForm):void{
-        if(index>=0 && index<_state.records.length){
-            _state.records[index]=record;
+    public static getInstance(): StateService{
+        if(!StateService.instance){
+            StateService.instance=new StateService();
         }
-    },
-    deleteRecord(index:number):void{
-        if(index>=0 && _state.records.length){
-            _state.records.splice(index,1);
+        return StateService.instance;
+    }
+
+    public get records():ExpenseForm[]{
+        return this._records;
+    }
+
+    public set records(value:ExpenseForm[]){
+        this._records=value;
+        this.eventBus.publish('RECORDS_CHANGED');
+    }    
+
+    public get editIndex():number|null{
+        return this._editIndex;
+    }
+
+    public set editIndex(value:number|null){
+        this._editIndex=value;
+        this.eventBus.publish('EDIT_MODE_CHANGED',{editIndex:value});
+    }
+
+    public addRecord(record:ExpenseForm):void{
+        this._records.push(record);
+        this.eventBus.publish('RECORD_ADDED',record);
+    }
+
+    public updateRecord(index:number, record:ExpenseForm):void{
+        if(index>=0 && index<this._records.length){
+            this._records[index]=record;
+            this.eventBus.publish('RECORD_UPDATED',{index,record});
         }
-    },
-    getRecord(index:number):ExpenseForm|null{
-        if(index>=0 && index<_state.records.length){
-            return _state.records[index];
+    }
+
+    public deleteRecord(index:number):void{
+        if(index>=0 && index<this._records.length){
+            this._records.splice(index,1);
+            this.eventBus.publish('RECORD_DELETED',{index});
+        }
+    }
+
+    public getRecord(index:number):ExpenseForm|null{
+        if(index>=0 && index<this._records.length){
+            return this._records[index];
         }
         return null;
-    },
-
-    getRecordsCount():number{
-        return _state.records.length;
-    },
-
-    clearAllRecords():void{
-        _state.records=[];
-        _state.editIndex=null;
     }
-};
+
+    public getRecordsCount():number{
+        return this._records.length;
+    }
+
+    public clearAllRecords():void{
+        this._records=[];
+        this._editIndex=null;
+        this.eventBus.publish('RECORDS_CLEARED');
+    }
+}
+
+export const state=StateService.getInstance();
+export default StateService;

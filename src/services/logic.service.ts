@@ -1,67 +1,87 @@
-import storage from "./storage.service";
+import StorageService from "./storage.service";
 import type { ExpenseForm } from "../types";
-import { state } from "./state.service";
+import StateService from "./state.service";
 
-const logic={
-    addRecord(data:ExpenseForm):void{
-    state.addRecord(data);
-    storage.saveState();
-    console.log('Record added,state saved');
-},
+class LogicService{
+    private static instance: LogicService;
+    private storageService:StorageService;
+    private stateService:StateService;
 
-updateRecord(data:ExpenseForm):void{
-    const editIndex=state.editIndex;
-    if(editIndex!=null){
-        state.updateRecord(editIndex,data);
-        state.editIndex=null;
-        storage.saveState();
-        console.log('Record updated,state saved');
+    private constructor(){
+        this.storageService=StorageService.getInstance();
+        this.stateService=StateService.getInstance();
     }
-},
 
-deleteRecord(index:number):void{
-    const editIndex=state.editIndex;
-    state.deleteRecord(index);
-
-    if(editIndex===index){
-        state.editIndex=null;
-    }else if(editIndex!==null && editIndex>index){
-        state.editIndex=editIndex-1;
+    public static getInstance(): LogicService{
+        if(!LogicService.instance){
+            LogicService.instance=new LogicService();
+        }
+        return LogicService.instance;
     }
-    storage.saveState();
-    console.log('Record deleted')
-},
 
-editRecord(index:number):void{
-    state.editIndex=index;
-    console.log('edit mode:index',index);
-},
+    public addRecord(data:ExpenseForm):void{
+        this.stateService.addRecord(data);
+        this.storageService.saveState();
+        console.log('Record added, state saved');
+    }
 
-getRecord(index:number):ExpenseForm|null{
-    return state.getRecord(index);
-},
+    public updateRecord(data:ExpenseForm):void{
+        const editIndex=this.stateService.editIndex;
+        if(editIndex!==null){
+            this.stateService.updateRecord(editIndex,data);
+            this.stateService.editIndex=null;
+            this.storageService.saveState();
+            console.log('Record updated, state saved');
+        }
+    }
 
-getAllRecords():ExpenseForm[]{
-    return state.records;
-},
+    public deleteRecord(index:number):void{
+        const editIndex=this.stateService.editIndex;
+        this.stateService.deleteRecord(index);
 
-getRecordsCount():number{
-    return state.getRecordsCount();
-},
-isEditing():boolean{
-    return state.editIndex!==null;
-},
-getEditIndex():number|null{
-    return state.editIndex;
-},
+        if(editIndex===index){
+            this.stateService.editIndex=null;
+        }else if(editIndex!==null && editIndex>index){
+            this.stateService.editIndex=editIndex-1;
+        }
+        this.storageService.saveState();
+        console.log('Record deleted');
+    }
 
-cancelEdit():void{
-    state.editIndex=null;
-},
-clearAllRecords():void{
-    state.clearAllRecords();
-    storage.saveState();
-    console.log('All records cleared');
+    public editRecord(index:number):void{
+        this.stateService.editIndex=index;
+        console.log('Edit mode:index',index);
+    }
+
+    public getRecord(index:number):ExpenseForm|null{
+        return this.stateService.getRecord(index);
+    }
+
+    public getAllRecords():ExpenseForm[]{
+        return this.stateService.records;
+    }
+
+    public getRecordsCount():number{
+        return this.stateService.getRecordsCount();
+    }
+
+    public isEditing():boolean{
+        return this.stateService.editIndex!==null;
+    }
+
+    public getEditIndex():number|null{
+        return this.stateService.editIndex;
+    }
+
+    public cancelEdit():void{
+        this.stateService.editIndex=null;
+    }
+
+    public clearAllRecords():void{
+        this.stateService.clearAllRecords();
+        this.storageService.saveState();
+        console.log('All records cleared');
+    }
 }
-};
-export default logic;
+
+export default LogicService;
