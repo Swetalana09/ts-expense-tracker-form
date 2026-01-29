@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-type ModalType = "success" | "error" | "confirm";
+type ModalType = 'success' | 'error' | 'confirm';
 
 interface ModalState {
   show: boolean;
@@ -13,17 +13,17 @@ interface ModalState {
 export function useModal() {
   const [modal, setModal] = useState<ModalState>({
     show: false,
-    type: "success",
-    title: "",
-    message: "",
+    type: 'success',
+    title: '',
+    message: '',
     onConfirm: () => {},
   });
 
   const showSuccessModal = (message: string) => {
     setModal({
       show: true,
-      type: "success",
-      title: "Success!",
+      type: 'success',
+      title: 'Success!',
       message,
       onConfirm: () => {},
     });
@@ -32,8 +32,8 @@ export function useModal() {
   const showErrorModal = (message: string) => {
     setModal({
       show: true,
-      type: "error",
-      title: "Error",
+      type: 'error',
+      title: 'Error',
       message,
       onConfirm: () => {},
     });
@@ -42,15 +42,15 @@ export function useModal() {
   const showConfirmModal = (message: string, onConfirm: () => void) => {
     setModal({
       show: true,
-      type: "confirm",
-      title: "Confirm",
+      type: 'confirm',
+      title: 'Confirm',
       message,
       onConfirm,
     });
   };
 
   const closeModal = () => {
-    setModal((prev) => ({ ...prev, show: false }));
+    setModal(prev => ({ ...prev, show: false }));
   };
   return {
     modal,

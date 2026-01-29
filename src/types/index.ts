@@ -25,7 +25,7 @@ export interface AppState {
   editIndex: number | null;
 }
 
-export type ModalType = "success" | "error" | "confirm";
+export type ModalType = 'success' | 'error' | 'confirm';
 
 export interface ModalState {
   show: boolean;

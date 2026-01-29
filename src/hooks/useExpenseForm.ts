@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import type { ExpenseForm, ValidationErrors } from "../types";
+import { useState, useEffect } from 'react';
+import type { ExpenseForm, ValidationErrors } from '../types';
 import {
   validateTitle,
   validateAmount,
@@ -8,7 +8,7 @@ import {
   validateDate,
   validateRadioGroup,
   validateCheckbox,
-} from "../utils/validation";
+} from '../utils/validation';
 
 interface UseExpenseFormProps {
   editIndex: number | null;
@@ -26,33 +26,33 @@ export function useExpenseForm({
   showModal,
 }: UseExpenseFormProps) {
   const [formData, setFormData] = useState<ExpenseForm>({
-    title: "",
-    category: "---select---",
-    currency: "---select---",
+    title: '',
+    category: '---select---',
+    currency: '---select---',
     amount: 0,
-    date: "",
-    time: "",
-    payments: "",
-    transactionID: "",
-    vendorName: "",
-    location: "",
-    tags: "",
-    notes: "",
+    date: '',
+    time: '',
+    payments: '',
+    transactionID: '',
+    vendorName: '',
+    location: '',
+    tags: '',
+    notes: '',
     receipt: false,
     saveRecurring: false,
     saveExpense: false,
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [titleError, setTitleError] = useState("");
-  const [amountError, setAmountError] = useState("");
+  const [titleError, setTitleError] = useState('');
+  const [amountError, setAmountError] = useState('');
 
   useEffect(() => {
     if (editRecord) {
       setFormData(editRecord);
       setErrors({});
-      setTitleError("");
-      setAmountError("");
+      setTitleError('');
+      setAmountError('');
     }
   }, [editRecord]);
 
@@ -64,31 +64,31 @@ export function useExpenseForm({
 
   const resetForm = () => {
     setFormData({
-      title: "",
-      category: "---select---",
-      currency: "---select---",
+      title: '',
+      category: '---select---',
+      currency: '---select---',
       amount: 0,
-      date: "",
-      time: "",
-      payments: "",
-      transactionID: "",
-      vendorName: "",
-      location: "",
-      tags: "",
-      notes: "",
+      date: '',
+      time: '',
+      payments: '',
+      transactionID: '',
+      vendorName: '',
+      location: '',
+      tags: '',
+      notes: '',
       receipt: false,
       saveRecurring: false,
       saveExpense: false,
     });
     setErrors({});
-    setTitleError("");
-    setAmountError("");
+    setTitleError('');
+    setAmountError('');
   };
 
   const handleChange = (field: keyof ExpenseForm, value: any) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }));
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -118,19 +118,19 @@ export function useExpenseForm({
       valid = false;
     }
 
-    const categoryErr = validateSelect(formData.category, "category");
+    const categoryErr = validateSelect(formData.category, 'category');
     if (categoryErr) {
       newErrors.category = categoryErr;
       valid = false;
     }
 
-    const currencyErr = validateSelect(formData.currency, "currency");
+    const currencyErr = validateSelect(formData.currency, 'currency');
     if (currencyErr) {
       newErrors.currency = currencyErr;
       valid = false;
     }
 
-    const dateErr = validateRequired(formData.date, "dt");
+    const dateErr = validateRequired(formData.date, 'dt');
     if (dateErr) {
       newErrors.date = dateErr;
       valid = false;
@@ -161,9 +161,9 @@ export function useExpenseForm({
 
     if (!validateForm()) {
       setTimeout(() => {
-        const firstError = document.querySelector(".error");
+        const firstError = document.querySelector('.error');
         if (firstError) {
-          firstError.scrollIntoView({ behavior: "smooth" });
+          firstError.scrollIntoView({ behavior: 'smooth' });
         }
       }, 100);
       return;
@@ -171,11 +171,11 @@ export function useExpenseForm({
 
     if (editIndex === null) {
       onSubmit(formData);
-      showModal("Expense added successfully!");
+      showModal('Expense added successfully!');
       resetForm();
     } else {
       onUpdate(formData);
-      showModal("Expense updated successfully!");
+      showModal('Expense updated successfully!');
       resetForm();
     }
   };

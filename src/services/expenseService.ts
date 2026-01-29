@@ -1,4 +1,4 @@
-import type { ExpenseForm, AppState } from "../types";
+import type { ExpenseForm, AppState } from '../types';
 
 class ExpenseService {
   addExpense(state: AppState, expense: ExpenseForm): AppState {
@@ -11,7 +11,7 @@ class ExpenseService {
   updateExpense(
     state: AppState,
     index: number,
-    expense: ExpenseForm,
+    expense: ExpenseForm
   ): AppState {
     const updated = [...state.records];
     updated[index] = expense;

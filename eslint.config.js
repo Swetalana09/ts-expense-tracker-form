@@ -10,11 +10,7 @@ export default [
         sourceType: 'module',
       },
     },
-        ignores: [
-      "**/node_modules/**",
-      "commitlint.config.cjs",
-      "**/dist/**",
-    ],
+    ignores: ['**/node_modules/**', 'commitlint.config.cjs', '**/dist/**'],
     plugins: {
       hub: hub,
     },

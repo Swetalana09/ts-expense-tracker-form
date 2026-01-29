@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { storageService, STORAGE_KEY } from "../services";
+import { useState, useEffect } from 'react';
+import { storageService, STORAGE_KEY } from '../services';
 
 export function useLocalStorage<T>(initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
