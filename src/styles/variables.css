@@ -1,0 +1,11 @@
+:root[data-theme='dark']{
+    --bg-body:#1a1a1a;
+    --bg-container:#2d2d2d;
+    --bg-form:#1f1f1f;
+    --bg-main:#d9560a;
+    --bg-table-header:#d9560a;
+    --bg-table-cell:#1f1f1f;
+    --bg-input:#2d2d2d;
+    --text-primary:#e0e0e0;
+    --border-color:#444;    
+}

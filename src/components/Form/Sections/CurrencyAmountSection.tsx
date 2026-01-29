@@ -41,7 +41,7 @@ const CurrencyAmountSection:React.FC<CurrencyAmountSectionProps>=({
             value={amount||''}
             onChange={(e)=>onAmountChange(e.target.value)}
             onBlur={onAmountBlur}
-            placeholder='Enter Amount'
+            placeholder='0.00'
             required
             inputMode='decimal'
             error={amountError}

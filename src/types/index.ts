@@ -19,3 +19,24 @@ export interface ExpenseForm{
 export interface ValidationErrors{
     [key:string]:string;
 }
+
+export interface AppState{
+    records:ExpenseForm[];
+    editIndex:number|null;
+}
+
+export type ModalType='success'|'error'|'confirm';
+
+export interface ModalState{
+    show:boolean;
+    type:ModalType;
+    title:string;
+    message:string;
+    onConfirm:()=>void;
+}
+
+export interface RadioOption{
+    id:string;
+    label:string;
+    value:string;
+}

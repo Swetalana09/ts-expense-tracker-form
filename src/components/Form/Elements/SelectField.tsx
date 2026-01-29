@@ -24,7 +24,7 @@ const SelectField: React.FC<SelectFieldProps>=({
     className
 })=>{
     return (
-        <div className={`input-group ${className} || ''}`}>
+        <div className={`input-group ${className || ''}`}>
             <label htmlFor={id}> 
                 {label}
                 {required && <span className='asterisk'>*</span>}

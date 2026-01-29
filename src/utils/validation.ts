@@ -20,10 +20,10 @@ export const validateTitle = (value:string, showRequired:boolean=false):string=>
 export const validateAmount=(value:string, showRequired:boolean=false):string=>{
     const val=value.trim();
 
-    if(showRequired && val===''){
+    if(showRequired && (val==='' || val=='0')){
         return 'Amount is required.'
     }
-    if(val!==''){
+    if(val!=='' && val!=='0'){
         if(!/^\d{1,10}(\.\d{0,2})?$/.test(val)){
             return 'Enter a valid number (up to 10 digits and 2 decimals).';
         }

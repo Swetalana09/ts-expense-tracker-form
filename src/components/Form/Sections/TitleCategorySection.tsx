@@ -36,7 +36,7 @@ const TitleCategorySection: React.FC<TitleCategorySectionProps>=({
             label='Category'
             value={category}
             onChange={(e)=>onCategoryChange(e.target.value)}
-            options={['---select---','Housing','Transportation','Health','Shopping','Entertainment','Technology',
+            options={['---select---','Housing','Food','Transportation','Health','Shopping','Entertainment','Technology',
                 'Miscellaneous expenses'
             ]}
             required
